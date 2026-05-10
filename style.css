@@ -1,0 +1,26 @@
+.header{
+color:  #333;
+    padding: 10px;
+    text-align: center;
+    display: flex;
+    justify-content: space-between;
+}
+
+.logo a{
+    font-size: 24px;
+    font-weight: bold;
+    text-decoration: none;
+    color: rgb(28, 28, 108);
+   align-items: center;
+    display: flex;
+}
+.logo i{
+   width: 50px;
+    height: 50px;
+    background-color: rgb(28, 28, 108);
+    color: white;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    display: flex;
+}
