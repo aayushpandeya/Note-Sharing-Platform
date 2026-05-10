@@ -123,3 +123,18 @@
     align-items: center;
     gap: 15px;
 }
+.major i{
+    width: 60px;
+    height: 60px;
+    background-color: var(--accent-strong);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+}
+.majors  :hover{
+    background-color: var(--accent);
+    transition: 2s;
+    
+}
