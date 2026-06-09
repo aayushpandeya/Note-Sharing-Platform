@@ -1,0 +1,126 @@
+/* ===== Upload Page Styles ===== */
+
+.upload-container {
+  max-width: 500px;
+  margin: 40px auto;
+  padding: 30px;
+  background-color: #f3f4f6;
+  border-radius: 10px;
+}
+
+.upload-container h1 {
+  text-align: center;
+  color: #21252b;
+  margin-bottom: 30px;
+  font-size: 32px;
+}
+
+.upload-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.form-group label {
+  font-weight: 600;
+  color: #21252b;
+  margin-bottom: 8px;
+  font-size: 14px;
+}
+
+.form-group input,
+.form-group select {
+  padding: 12px 14px;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 14px;
+  background-color: white;
+  color: #21252b;
+  font-family: inherit;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+  outline: none;
+  border-color: #4b5563;
+  box-shadow: 0 0 0 3px rgba(75, 85, 99, 0.1);
+}
+
+/* File input styling */
+.form-group input[type="file"] {
+  padding: 10px;
+  cursor: pointer;
+}
+
+.upload-btn {
+  padding: 12px 32px;
+  background-color: #4b5563;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  margin-top: 10px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.upload-btn:hover {
+  background-color: #6b7280;
+}
+
+.back-btn {
+  padding: 12px 32px;
+  background-color: white;
+  color: #21252b;
+  border: 2px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  text-decoration: none;
+  text-align: center;
+  cursor: pointer;
+  transition: border-color 0.3s ease;
+}
+
+.back-btn:hover {
+  border-color: #4b5563;
+}
+
+/* ===== Success Message ===== */
+.success-message {
+  text-align: center;
+  padding: 30px;
+}
+
+.success-message i {
+  font-size: 50px;
+  color: #22c55e;
+  margin-bottom: 15px;
+}
+
+.success-message h3 {
+  color: #21252b;
+  font-size: 22px;
+  margin-bottom: 10px;
+}
+
+.success-message p {
+  color: #6b7280;
+  margin-bottom: 25px;
+}
+
+.success-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}

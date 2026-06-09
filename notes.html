@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Browse Notes - Classly</title>
+  <!-- Main site styles first -->
+  <link rel="stylesheet" href="style.css">
+  <!-- Font Awesome 7 icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css" integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw==" crossorigin="anonymous" referrerpolicy="no-referrer">
+  <!-- Page-specific styles -->
+  <link rel="stylesheet" href="notes.css">
+</head>
+<body class="notes-page">
+
+  <!-- ===== Header (same as other pages) ===== -->
+  <header class="header">
+    <div class="logo">
+      <i class="fa-solid fa-book-open"></i>
+      <a href="index.html">Classly.</a>
+    </div>
+    <div class="actions">
+      <div class="btn">
+        <i class="fa-solid fa-upload"></i>
+        <a href="upload.html">Upload Notes</a>
+      </div>
+      <div class="profile">
+        <i class="fa-solid fa-user"></i>
+      </div>
+    </div>
+  </header>
+
+  <!-- ===== Page Title ===== -->
+  <h1 class="page-title">Browse Notes</h1>
+
+  <!-- ===== Filter Bar ===== -->
+  <div class="filter-bar">
+    <!-- Program filter -->
+    <select id="filterProgram">
+      <option value="">All Programs</option>
+      <option value="bcsit">BCSIT</option>
+      <option value="bba">BBA</option>
+      <option value="bhm">BHM</option>
+    </select>
+
+    <!-- Year filter -->
+    <select id="filterYear">
+      <option value="">All Years</option>
+      <option value="1">Year 1</option>
+      <option value="2">Year 2</option>
+      <option value="3">Year 3</option>
+      <option value="4">Year 4</option>
+    </select>
+
+    <!-- Semester filter (updates dynamically based on year) -->
+    <select id="filterSemester">
+      <option value="">All Semesters</option>
+      <option value="Semester 1">Semester 1</option>
+      <option value="Semester 2">Semester 2</option>
+      <option value="Semester 3">Semester 3</option>
+      <option value="Semester 4">Semester 4</option>
+      <option value="Semester 5">Semester 5</option>
+      <option value="Semester 6">Semester 6</option>
+      <option value="Semester 7">Semester 7</option>
+      <option value="Semester 8">Semester 8</option>
+    </select>
+
+    <!-- Search by title or subject -->
+    <input type="text" id="searchInput" placeholder="Search by title or subject...">
+  </div>
+
+  <!-- ===== Notes Grid (cards render here) ===== -->
+  <div class="notes-grid" id="notesGrid">
+    <!-- Note cards are inserted by JavaScript -->
+  </div>
+
+  <!-- ===== JavaScript ===== -->
+  <script>
+    // ============================================
+    // SAMPLE NOTES DATA
+    // Added on first load so the page isn't empty
+    // during a presentation / demo.
+    // ============================================
+    const sampleNotes = [
+      {
+        title: "Introduction to Programming",
+        subject: "C Programming",
+        program: "bcsit",
+        year: "1",
+        semester: "Semester 1",
+        uploadedBy: "Anish Sharma",
+        date: "2026-05-20",
+        fileName: "intro-to-programming.pdf",
+        fileData: ""
+      },
+      {
+        title: "Data Structures & Algorithms",
+        subject: "DSA",
+        program: "bcsit",
+        year: "2",
+        semester: "Semester 3",
+        uploadedBy: "Priya Thapa",
+        date: "2026-05-18",
+        fileName: "dsa-notes.pdf",
+        fileData: ""
+      },
+      {
+        title: "Principles of Management",
+        subject: "Management",
+        program: "bba",
+        year: "1",
+        semester: "Semester 1",
+        uploadedBy: "Rohan KC",
+        date: "2026-05-15",
+        fileName: "management-principles.pdf",
+        fileData: ""
+      },
+      {
+        title: "Financial Accounting",
+        subject: "Accounting",
+        program: "bba",
+        year: "2",
+        semester: "Semester 4",
+        uploadedBy: "Sita Rai",
+        date: "2026-05-12",
+        fileName: "financial-accounting.pdf",
+        fileData: ""
+      },
+      {
+        title: "Front Office Management",
+        subject: "Hospitality",
+        program: "bhm",
+        year: "1",
+        semester: "Semester 2",
+        uploadedBy: "Bikash Gurung",
+        date: "2026-05-10",
+        fileName: "front-office-mgmt.pdf",
+        fileData: ""
+      },
+      {
+        title: "Food & Beverage Service",
+        subject: "F&B Service",
+        program: "bhm",
+        year: "3",
+        semester: "Semester 5",
+        uploadedBy: "Manisha Poudel",
+        date: "2026-05-08",
+        fileName: "fb-service-notes.pdf",
+        fileData: ""
+      }
+    ];
+
+    // ------------------------------------------
+    // Load notes from localStorage.
+    // If none exist, seed with sample data.
+    // ------------------------------------------
+    function loadNotes() {
+      let notes = JSON.parse(localStorage.getItem('notes'));
+
+      // First-time visit: add sample notes
+      if (!notes || notes.length === 0) {
+        localStorage.setItem('notes', JSON.stringify(sampleNotes));
+        notes = sampleNotes;
+      }
+
+      return notes;
+    }
+
+    // ------------------------------------------
+    // Update semester dropdown based on year.
+    // Year 1 → Sem 1-2, Year 2 → Sem 3-4, etc.
+    // No year selected → show all semesters.
+    // ------------------------------------------
+    function updateSemesterOptions() {
+      const year = document.getElementById('filterYear').value;
+      const semesterSelect = document.getElementById('filterSemester');
+      const currentValue = semesterSelect.value;
+
+      // Clear existing options
+      semesterSelect.innerHTML = '<option value="">All Semesters</option>';
+
+      if (year === '') {
+        // Show all 8 semesters when no year is picked
+        for (let i = 1; i <= 8; i++) {
+          const opt = document.createElement('option');
+          opt.value = 'Semester ' + i;
+          opt.textContent = 'Semester ' + i;
+          semesterSelect.appendChild(opt);
+        }
+      } else {
+        // Show only the 2 semesters for the selected year
+        const startSem = (parseInt(year) - 1) * 2 + 1;
+        const endSem = startSem + 1;
+        for (let i = startSem; i <= endSem; i++) {
+          const opt = document.createElement('option');
+          opt.value = 'Semester ' + i;
+          opt.textContent = 'Semester ' + i;
+          semesterSelect.appendChild(opt);
+        }
+      }
+
+      // Try to keep the previous selection if it's still valid
+      semesterSelect.value = currentValue;
+    }
+
+    // ------------------------------------------
+    // Filter & render notes based on dropdowns
+    // and search input.
+    // ------------------------------------------
+    function filterAndRender() {
+      const notes = loadNotes();
+      const program = document.getElementById('filterProgram').value;
+      const year = document.getElementById('filterYear').value;
+      const semester = document.getElementById('filterSemester').value;
+      const search = document.getElementById('searchInput').value.toLowerCase().trim();
+
+      // Apply each filter
+      const filtered = notes.filter(function(note) {
+        // Program filter
+        if (program && note.program !== program) return false;
+        // Year filter
+        if (year && note.year !== year) return false;
+        // Semester filter
+        if (semester && note.semester !== semester) return false;
+        // Search filter (matches title or subject)
+        if (search) {
+          const inTitle = note.title.toLowerCase().includes(search);
+          const inSubject = note.subject.toLowerCase().includes(search);
+          if (!inTitle && !inSubject) return false;
+        }
+        return true;
+      });
+
+      renderNotes(filtered);
+    }
+
+    // ------------------------------------------
+    // Render note cards into the grid.
+    // Shows an empty state if no notes match.
+    // ------------------------------------------
+    function renderNotes(notes) {
+      const grid = document.getElementById('notesGrid');
+      grid.innerHTML = ''; // Clear previous cards
+
+      // Empty state
+      if (notes.length === 0) {
+        grid.innerHTML = `
+          <div class="empty-state">
+            <i class="fa-solid fa-folder-open"></i>
+            <p>No notes found. Be the first to upload!</p>
+            <a href="upload.html">
+              <i class="fa-solid fa-upload"></i> Upload Notes
+            </a>
+          </div>
+        `;
+        return;
+      }
+
+      // Build a card for each note
+      notes.forEach(function(note, index) {
+        // Nice label for the program
+        const programLabel = note.program.toUpperCase();
+
+        const card = document.createElement('div');
+        card.className = 'note-card';
+        card.innerHTML = `
+          <div class="note-icon">
+            <i class="fa-solid fa-file-lines"></i>
+          </div>
+          <h3 class="note-title">${note.title}</h3>
+          <p class="note-subject">${note.subject}</p>
+          <span class="note-badge">${programLabel}</span>
+          <p class="note-semester">Year ${note.year} · ${note.semester}</p>
+          <p class="note-meta">
+            <i class="fa-solid fa-user"></i> ${note.uploadedBy} · ${note.date}
+          </p>
+          <button class="download-btn" onclick="downloadNote(${index})">
+            <i class="fa-solid fa-download"></i> Download
+          </button>
+        `;
+        grid.appendChild(card);
+      });
+    }
+
+    // ------------------------------------------
+    // Download a note file.
+    // Creates a temporary <a> tag and clicks it.
+    // ------------------------------------------
+    function downloadNote(index) {
+      const notes = loadNotes();
+      const note = notes[index];
+
+      // If there's no actual file data (sample notes), show alert
+      if (!note.fileData) {
+        alert('This is a sample note — no file attached.\nUpload a real note to test downloads!');
+        return;
+      }
+
+      // Create a temporary link and trigger download
+      const link = document.createElement('a');
+      link.href = note.fileData;
+      link.download = note.fileName || 'note-file';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+
+    // ============================================
+    // EVENT LISTENERS
+    // Each filter change re-runs filterAndRender.
+    // ============================================
+    document.getElementById('filterProgram').addEventListener('change', filterAndRender);
+
+    document.getElementById('filterYear').addEventListener('change', function() {
+      // Update semester options when year changes
+      updateSemesterOptions();
+      filterAndRender();
+    });
+
+    document.getElementById('filterSemester').addEventListener('change', filterAndRender);
+
+    // Search on every keystroke (instant filter)
+    document.getElementById('searchInput').addEventListener('input', filterAndRender);
+
+    // ============================================
+    // INIT — render notes on page load
+    // ============================================
+
+    // Check if a program filter was passed via URL (e.g. ?program=bcsit)
+    var urlParams = new URLSearchParams(window.location.search);
+    var programParam = urlParams.get('program');
+    if (programParam) {
+      document.getElementById('filterProgram').value = programParam;
+    }
+
+    filterAndRender();
+  </script>
+
+</body>
+</html>

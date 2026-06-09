@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Upload Notes - Classly</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css" integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw==" crossorigin="anonymous" referrerpolicy="no-referrer">
+  <link rel="stylesheet" href="upload.css">
+</head>
+<body>
+  <!-- Header -->
+  <header class="header">
+    <div class="logo">
+      <i class="fa-solid fa-book-open"></i>
+      <a href="index.html">Classly.</a>
+    </div>
+    <div class="actions">
+      <div class="btn">
+        <i class="fa-solid fa-eye"></i>
+        <a href="notes.html">View Notes</a>
+      </div>
+      <div class="profile">
+        <i class="fa-solid fa-user"></i>
+      </div>
+    </div>
+  </header>
+
+  <!-- Upload Form -->
+  <div class="upload-container">
+    <h1>Upload Your Notes</h1>
+    <form class="upload-form" id="uploadForm" onsubmit="handleUpload(event)">
+
+      <!-- Note Title -->
+      <div class="form-group">
+        <label for="title">Note Title</label>
+        <input type="text" id="title" placeholder="e.g. Chapter 3 Summary" required>
+      </div>
+
+      <!-- Program -->
+      <div class="form-group">
+        <label for="program">Select Program</label>
+        <select id="program" required>
+          <option value="">Choose a program...</option>
+          <option value="bcsit">BCSIT</option>
+          <option value="bba">BBA</option>
+          <option value="bhm">BHM</option>
+        </select>
+      </div>
+
+      <!-- Year -->
+      <div class="form-group">
+        <label for="year">Year</label>
+        <select id="year" onchange="updateSemesters()" required>
+          <option value="">Select Year</option>
+          <option value="1">Year 1</option>
+          <option value="2">Year 2</option>
+          <option value="3">Year 3</option>
+          <option value="4">Year 4</option>
+        </select>
+      </div>
+
+      <!-- Semester -->
+      <div class="form-group">
+        <label for="semester">Semester</label>
+        <select id="semester" required>
+          <option value="">Select Semester</option>
+        </select>
+      </div>
+
+      <!-- Subject -->
+      <div class="form-group">
+        <label for="subject">Subject</label>
+        <input type="text" id="subject" placeholder="e.g. Data Structures" required>
+      </div>
+
+      <!-- File Upload -->
+      <div class="form-group">
+        <label for="file">Upload File (PDF, DOC, PPT, Image)</label>
+        <input type="file" id="file" accept=".pdf,.doc,.docx,.ppt,.pptx,.jpg,.jpeg,.png,.txt" required>
+      </div>
+
+      <button type="submit" class="upload-btn">
+        <i class="fa-solid fa-upload"></i> Upload Notes
+      </button>
+      <a href="index.html" class="back-btn">Back to Home</a>
+    </form>
+
+    <!-- Success Message (hidden by default) -->
+    <div id="successMsg" class="success-message" style="display:none;">
+      <i class="fa-solid fa-circle-check"></i>
+      <h3>Notes Uploaded Successfully!</h3>
+      <p>Your notes are now available for other students.</p>
+      <div class="success-buttons">
+        <button onclick="resetForm()" class="upload-btn">Upload More</button>
+        <a href="notes.html" class="back-btn">View All Notes</a>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ===== SEMESTER MAPPING =====
+    // Maps each year to its two semesters
+    var semesterMap = {
+      '1': ['Semester 1', 'Semester 2'],
+      '2': ['Semester 3', 'Semester 4'],
+      '3': ['Semester 5', 'Semester 6'],
+      '4': ['Semester 7', 'Semester 8']
+    };
+
+    // Update semester dropdown when year changes
+    function updateSemesters() {
+      var year = document.getElementById('year').value;
+      var semesterSelect = document.getElementById('semester');
+
+      // Clear old options
+      semesterSelect.innerHTML = '<option value="">Select Semester</option>';
+
+      // Add new options based on selected year
+      if (year && semesterMap[year]) {
+        for (var i = 0; i < semesterMap[year].length; i++) {
+          var option = document.createElement('option');
+          option.value = semesterMap[year][i];
+          option.textContent = semesterMap[year][i];
+          semesterSelect.appendChild(option);
+        }
+      }
+    }
+
+    // ===== HANDLE UPLOAD =====
+    function handleUpload(event) {
+      event.preventDefault(); // Stop form from refreshing page
+
+      // Get form values
+      var title = document.getElementById('title').value;
+      var program = document.getElementById('program').value;
+      var year = document.getElementById('year').value;
+      var semester = document.getElementById('semester').value;
+      var subject = document.getElementById('subject').value;
+      var fileInput = document.getElementById('file');
+      var file = fileInput.files[0];
+
+      // Check if user is logged in
+      var currentUser = localStorage.getItem('currentUser');
+      var uploaderName = 'Anonymous';
+      if (currentUser) {
+        uploaderName = JSON.parse(currentUser).name;
+      }
+
+      // Read the file as base64 so we can store it in localStorage
+      var reader = new FileReader();
+      reader.onload = function(e) {
+        // Create a note object
+        var note = {
+          title: title,
+          subject: subject,
+          program: program,
+          year: year,
+          semester: semester,
+          uploadedBy: uploaderName,
+          date: new Date().toLocaleDateString(),
+          fileName: file.name,
+          fileData: e.target.result // base64 encoded file
+        };
+
+        // Get existing notes from localStorage (or empty array)
+        var notes = JSON.parse(localStorage.getItem('notes') || '[]');
+
+        // Add new note to the array
+        notes.push(note);
+
+        // Save back to localStorage
+        localStorage.setItem('notes', JSON.stringify(notes));
+
+        // Show success message, hide form
+        document.getElementById('uploadForm').style.display = 'none';
+        document.getElementById('successMsg').style.display = 'block';
+      };
+
+      // Start reading the file
+      reader.readAsDataURL(file);
+    }
+
+    // ===== RESET FORM =====
+    function resetForm() {
+      document.getElementById('uploadForm').reset();
+      document.getElementById('uploadForm').style.display = 'flex';
+      document.getElementById('successMsg').style.display = 'none';
+    }
+  </script>
+</body>
+</html>

@@ -1,58 +1,352 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Student-Note-Sharing-Platform</title>
-    <link rel="stylesheet" href="style.css" />
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css"
-      integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw=="
-      crossorigin="anonymous"
-      referrerpolicy="no-referrer"
-    />
-  </head>
-  <body>
-    <header class="header">
-        <div class="logo">
-        <i class="fa-solid fa-book-open"></i>
-      <a href="#" class="lol">Classly.</a>
-        </div>
-      <div class="global-search-wrap">
-        <form class="global-search" action="">
-          <i class="fa-solid fa-magnifying-glass"></i>
-          <input
-            type="text"
-            placeholder="Search for notes, subjects, or users..."
-          />
-        </form>
-      </div>
-      <div class="actions">
-        <div class="btn">
-          <i class="fa-solid fa-upload"></i>
-          <a href="#">Upload Notes</a>
-        </div>
-        <div class="profile">
-          <i class="fa-solid fa-user"></i>
-        </div>
-      </div>
-    </header>
-
-    <div class="majors">
-        
-        <button class="major">
-            <i class="fa-solid fa-computer"></i>
-            <h3>BCSIT</h3>
-        </button>
-        <button class="major">
-            <i class="fa-solid fa-book"></i>
-            <h3>BBA</h3>
-        </button>
-        <button class="major">
-            <i class="fa-solid fa-hotel"></i>
-            <h3>BHM</h3>
-        </button>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Student-Note-Sharing-Platform</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css" integrity="sha512-2SwdPD6INVrV/lHTZbO2nodKhrnDdJK9/kg2XD1r9uGqPo1cUbujc+IYdlYdEErWNu69gVcYgdxlmVmzTWnetw==" crossorigin="anonymous" referrerpolicy="no-referrer">
+</head>
+<body>
+  <header class="header">
+    <div class="logo">
+      <i class="fa-solid fa-book-open"></i>
+      <a href="#">Classly.</a>
     </div>
-  </body>
+    <div class="actions">
+      <div class="btn">
+        <i class="fa-solid fa-upload"></i>
+        <a href="upload.html">Upload Notes</a>
+      </div>
+      <div class="profile" id="profileBtn" onclick="toggleLoginModal()">
+        <i class="fa-solid fa-user"></i>
+      </div>
+    </div>
+  </header>
+
+  <!-- Login Modal -->
+  <div id="loginModal" class="modal">
+    <div class="modal-content">
+      <span class="close" onclick="closeLoginModal()">&times;</span>
+      
+      <div id="loginForm" class="login-section">
+        <h2>Welcome Back</h2>
+        <form onsubmit="handleLogin(event)">
+          <div class="form-group">
+            <label for="email">Email</label>
+            <input type="email" id="email" name="email" required>
+          </div>
+          <div class="form-group">
+            <label for="password">Password</label>
+            <input type="password" id="password" name="password" required>
+          </div>
+          <div class="form-group">
+            <label for="loginFaculty">Faculty</label>
+            <select id="loginFaculty" name="loginFaculty" required>
+              <option value="">Select Faculty</option>
+              <option value="BCSIT">BCSIT (Bachelors of Computer System and Information Technology)</option>
+              <option value="BBA">BBA (Bachelors in Business Administration)</option>
+              <option value="BBA-Finance">BBA-Finance (Bachelors in Business Administration - Finance)</option>
+              <option value="BHM">BHM (Bachelor of Hotel Management)</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="loginYear">Year</label>
+            <select id="loginYear" name="loginYear" onchange="updateLoginSemesters()" required>
+              <option value="">Select Year</option>
+              <option value="1">Year 1</option>
+              <option value="2">Year 2</option>
+              <option value="3">Year 3</option>
+              <option value="4">Year 4</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="loginSemester">Semester</label>
+            <select id="loginSemester" name="loginSemester" required>
+              <option value="">Select Semester</option>
+            </select>
+          </div>
+          <button type="submit" class="btn-login">Login</button>
+        </form>
+        <p class="toggle-text">Don't have an account? <span onclick="toggleForm()" class="link">Sign Up</span></p>
+      </div>
+
+      <div id="signupForm" class="signup-section" style="display:none;">
+        <h2>Create Account</h2>
+        <form onsubmit="handleSignup(event)">
+          <div class="form-group">
+            <label for="fullname">Full Name</label>
+            <input type="text" id="fullname" name="fullname" required>
+          </div>
+          <div class="form-group">
+            <label for="signupEmail">Email</label>
+            <input type="email" id="signupEmail" name="signupEmail" required>
+          </div>
+          <div class="form-group">
+            <label for="signupPassword">Password</label>
+            <input type="password" id="signupPassword" name="signupPassword" required>
+          </div>
+          <div class="form-group">
+            <label for="faculty">Faculty</label>
+            <select id="faculty" name="faculty" required>
+              <option value="">Select Faculty</option>
+              <option value="BCSIT">BCSIT (Bachelors of Computer System and Information Technology)</option>
+              <option value="BBA">BBA (Bachelors in Business Administration)</option>
+              <option value="BBA-Finance">BBA-Finance (Bachelors in Business Administration - Finance)</option>
+              <option value="BHM">BHM (Bachelor of Hotel Management)</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="year">Year</label>
+            <select id="year" name="year" onchange="updateSemesters()" required>
+              <option value="">Select Year</option>
+              <option value="1">Year 1</option>
+              <option value="2">Year 2</option>
+              <option value="3">Year 3</option>
+              <option value="4">Year 4</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="semester">Semester</label>
+            <select id="semester" name="semester" required>
+              <option value="">Select Semester</option>
+            </select>
+          </div>
+          <button type="submit" class="btn-login">Sign Up</button>
+        </form>
+        <p class="toggle-text">Already have an account? <span onclick="toggleForm()" class="link">Login</span></p>
+      </div>
+
+      <div id="profileSection" class="profile-section" style="display:none;">
+        <div class="user-info">
+          <div class="user-avatar"><i class="fa-solid fa-user"></i></div>
+          <div class="user-details">
+            <h3 id="userName">User Name</h3>
+            <p id="userEmail">user@email.com</p>
+            <p id="userFaculty" class="user-meta">Faculty</p>
+            <p id="userYear" class="user-meta">Year</p>
+            <p id="userSemester" class="user-meta">Semester</p>
+          </div>
+        </div>
+        <div class="profile-menu">
+          <button onclick="openSettings()" class="menu-item"><i class="fa-solid fa-gear"></i> Settings</button>
+          <button onclick="logout()" class="menu-item logout"><i class="fa-solid fa-sign-out"></i> Logout</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="hero">
+    <p class="subtitle"> Student note site</p>
+    <h1>Find notes fast and keep it clean.</h1>
+    <div class="hero-buttons">
+      <button class="btn-primary" onclick="window.location.href='notes.html'">View Notes</button>
+      <button class="btn-secondary" onclick="window.location.href='upload.html'"> Upload Notes</button>
+    </div>
+  </div>
+
+  <div class="programs">
+    <button class="program" onclick="window.location.href='notes.html?program=bcsit'">
+      <i class="fa-solid fa-computer"></i>
+      <h3>BCSIT</h3>
+      <p>Computer Science & IT</p>
+    </button>
+    <button class="program" onclick="window.location.href='notes.html?program=bba'">
+      <i class="fa-solid fa-book"></i>
+      <h3>BBA</h3>
+      <p>Business Administration</p>
+    </button>
+    <button class="program" onclick="window.location.href='notes.html?program=bhm'">
+      <i class="fa-solid fa-hotel"></i>
+      <h3>BHM</h3>
+      <p>Hotel Management</p>
+    </button>
+  </div>
+
+  <!-- Recent Notes Section -->
+  <div class="recent-notes">
+    <h2>Recently Uploaded Notes</h2>
+    <div id="recentNotesGrid" class="recent-grid">
+      <!-- Filled by JavaScript -->
+    </div>
+    <div class="view-all">
+      <button class="btn-secondary" onclick="window.location.href='notes.html'">View All Notes</button>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <p>&copy; 2026 Classly. Student Note Sharing Platform.</p>
+  </footer>
+
+  <script>
+    // ===== LOAD RECENT NOTES ON HOMEPAGE =====
+    function loadRecentNotes() {
+      var notes = JSON.parse(localStorage.getItem('notes') || '[]');
+      var grid = document.getElementById('recentNotesGrid');
+
+      // Show last 3 notes
+      var recent = notes.slice(-3).reverse();
+
+      if (recent.length === 0) {
+        grid.innerHTML = '<p class="no-notes">No notes uploaded yet. Be the first to share!</p>';
+        return;
+      }
+
+      var html = '';
+      for (var i = 0; i < recent.length; i++) {
+        var note = recent[i];
+        html += '<div class="recent-card">';
+        html += '  <i class="fa-solid fa-file-lines"></i>';
+        html += '  <h4>' + note.title + '</h4>';
+        html += '  <p>' + note.subject + '</p>';
+        html += '  <span class="badge">' + note.program.toUpperCase() + '</span>';
+        html += '</div>';
+      }
+      grid.innerHTML = html;
+    }
+
+    // Check if user is logged in on page load
+    window.addEventListener('DOMContentLoaded', function() {
+      var user = localStorage.getItem('currentUser');
+      if (user) {
+        showProfileSection();
+      }
+      loadRecentNotes();
+    });
+
+    function toggleLoginModal() {
+      const modal = document.getElementById('loginModal');
+      modal.style.display = modal.style.display === 'block' ? 'none' : 'block';
+    }
+
+    function closeLoginModal() {
+      document.getElementById('loginModal').style.display = 'none';
+    }
+
+    // Semester mapping based on year
+    const semesterMap = {
+      '1': ['Semester 1', 'Semester 2'],
+      '2': ['Semester 3', 'Semester 4'],
+      '3': ['Semester 5', 'Semester 6'],
+      '4': ['Semester 7', 'Semester 8']
+    };
+
+    function updateSemesters() {
+      const year = document.getElementById('year').value;
+      const semesterSelect = document.getElementById('semester');
+      semesterSelect.innerHTML = '<option value="">Select Semester</option>';
+      
+      if (year && semesterMap[year]) {
+        semesterMap[year].forEach(sem => {
+          const option = document.createElement('option');
+          option.value = sem;
+          option.textContent = sem;
+          semesterSelect.appendChild(option);
+        });
+      }
+    }
+
+    function updateLoginSemesters() {
+      const year = document.getElementById('loginYear').value;
+      const semesterSelect = document.getElementById('loginSemester');
+      semesterSelect.innerHTML = '<option value="">Select Semester</option>';
+      
+      if (year && semesterMap[year]) {
+        semesterMap[year].forEach(sem => {
+          const option = document.createElement('option');
+          option.value = sem;
+          option.textContent = sem;
+          semesterSelect.appendChild(option);
+        });
+      }
+    }
+
+    function toggleForm() {
+      const loginForm = document.getElementById('loginForm');
+      const signupForm = document.getElementById('signupForm');
+      loginForm.style.display = loginForm.style.display === 'none' ? 'block' : 'none';
+      signupForm.style.display = signupForm.style.display === 'none' ? 'block' : 'none';
+    }
+
+    function handleLogin(event) {
+      event.preventDefault();
+      const email = document.getElementById('email').value;
+      const password = document.getElementById('password').value;
+      const faculty = document.getElementById('loginFaculty').value;
+      const year = document.getElementById('loginYear').value;
+      const semester = document.getElementById('loginSemester').value;
+      
+      // Simple validation
+      if (email && password && faculty && year && semester) {
+        const userData = {
+          name: email.split('@')[0],
+          email: email,
+          faculty: faculty,
+          year: year,
+          semester: semester
+        };
+        localStorage.setItem('currentUser', JSON.stringify(userData));
+        showProfileSection();
+      }
+    }
+
+    function handleSignup(event) {
+      event.preventDefault();
+      const fullname = document.getElementById('fullname').value;
+      const email = document.getElementById('signupEmail').value;
+      const password = document.getElementById('signupPassword').value;
+      const faculty = document.getElementById('faculty').value;
+      const year = document.getElementById('year').value;
+      const semester = document.getElementById('semester').value;
+      
+      // Simple validation
+      if (fullname && email && password && faculty && year && semester) {
+        const userData = {
+          name: fullname,
+          email: email,
+          faculty: faculty,
+          year: year,
+          semester: semester
+        };
+        localStorage.setItem('currentUser', JSON.stringify(userData));
+        showProfileSection();
+      }
+    }
+
+    function showProfileSection() {
+      const user = JSON.parse(localStorage.getItem('currentUser'));
+      document.getElementById('loginForm').style.display = 'none';
+      document.getElementById('signupForm').style.display = 'none';
+      document.getElementById('profileSection').style.display = 'block';
+      document.getElementById('userName').textContent = user.name;
+      document.getElementById('userEmail').textContent = user.email;
+      document.getElementById('userFaculty').textContent = 'Faculty: ' + user.faculty;
+      document.getElementById('userYear').textContent = 'Year: ' + user.year;
+      document.getElementById('userSemester').textContent = user.semester;
+    }
+
+    function logout() {
+      localStorage.removeItem('currentUser');
+      document.getElementById('profileSection').style.display = 'none';
+      document.getElementById('loginForm').style.display = 'block';
+      document.getElementById('signupForm').style.display = 'none';
+      document.getElementById('loginModal').style.display = 'none';
+      // Reset forms
+      document.querySelectorAll('form').forEach(form => form.reset());
+    }
+
+    function openSettings() {
+      alert('Settings page - coming soon!');
+    }
+
+    // Close modal when clicking outside
+    window.onclick = function(event) {
+      const modal = document.getElementById('loginModal');
+      if (event.target == modal) {
+        modal.style.display = 'none';
+      }
+    }
+  </script>
+</body>
 </html>
